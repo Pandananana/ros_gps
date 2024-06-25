@@ -6,6 +6,8 @@ LABEL description="ROS2 Humble"
 
 # Update and install any dependencies or additional packages
 RUN apt-get update && apt-get install -y \
+    # Install GPS library
+    libgps-dev \
     # Clean up
     && rm -rf /var/lib/apt/lists/*
 
