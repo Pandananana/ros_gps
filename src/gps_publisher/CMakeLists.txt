@@ -9,19 +9,28 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(GPS REQUIRED)
-target_link_libraries(gps_publisher ${GPS_LIBRARIES})
+
+# Use pkg-config to find libgps
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBGPS REQUIRED libgps)
 
 add_executable(gps_publisher src/gps_publisher.cpp)
+
 target_include_directories(gps_publisher PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:include>
+  ${LIBGPS_INCLUDE_DIRS}
+)
+
 target_compile_features(gps_publisher PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+
 ament_target_dependencies(
   gps_publisher
   "rclcpp"
   "sensor_msgs"
 )
+
+target_link_libraries(gps_publisher ${LIBGPS_LIBRARIES})
 
 install(TARGETS gps_publisher
   DESTINATION lib/${PROJECT_NAME})
